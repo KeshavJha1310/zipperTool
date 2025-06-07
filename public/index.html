@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>File Converter & Zipper</title>
+  <style>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f9fc;
+  color: #333;
+  padding: 2rem 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+h1 {
+  text-align: center;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 2rem;
+}
+
+form {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #555;
+}
+
+input[type="text"],
+input[type="file"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 1.5rem;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="file"]:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 6px rgba(74,144,226,0.4);
+}
+
+button[type="submit"] {
+  width: 100%;
+  background-color: #4a90e2;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px 0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #357abd;
+}
+
+#renameFields label {
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 0.7rem;
+}
+
+#renameFields input[type="text"] {
+  margin-top: 0.3rem;
+  margin-bottom: 1.2rem;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  border: 1.5px solid #bbb;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+#renameFields input[type="text"]:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74,144,226,0.4);
+  outline: none;
+}
+
+.status {
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #28a745; /* success green */
+  text-align: center;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Upload Files to Rename, Convert & Zip</h1>
+
+  <form id="uploadForm" action="http://localhost:3000/process" method="POST" enctype="multipart/form-data" target="_blank">
+    <label>
+      Folder Name: 
+      <input type="text" id="folderName" name="folderName" required placeholder="Enter output folder name">
+    </label>
+    <br><br>
+
+    <input type="file" id="fileInput" name="files" multiple required>
+    <div id="renameFields"></div>
+
+    <br><br>
+    <button type="submit">Process Files</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const renameFields = document.getElementById('renameFields');
+
+    let selectedFiles = [];
+
+    fileInput.addEventListener('change', () => {
+      renameFields.innerHTML = '';
+      selectedFiles = Array.from(fileInput.files);
+
+      selectedFiles.forEach((file) => {
+        renameFields.innerHTML += `
+          <label>
+            Rename "${file.name}" to:
+            <input type="text" name="newNames" value="${file.name.split('.')[0]}" />
+          </label><br><br>
+        `;
+      });
+    });
+
+    form.addEventListener('submit', () => {
+      // Add the renameList as a hidden input before submitting
+      const renameInputs = document.querySelectorAll('input[name="newNames"]');
+      const newNames = [...renameInputs].map(input => input.value);
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = 'renameList';
+      hiddenInput.value = JSON.stringify(newNames);
+      form.appendChild(hiddenInput);
+    });
+  </script>
+</body>
+</html>
