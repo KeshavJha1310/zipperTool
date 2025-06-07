@@ -15,7 +15,7 @@ app.use(express.static('public'));
 
 const upload = multer({ dest: 'uploads/' });
 
-app.post('https://zippertool.onrender.com/process', upload.array('files'), async (req, res) => {
+app.post('/process', upload.array('files'), async (req, res) => {
     const folderName = req.body.folderName || `output_${Date.now()}`;
     const safeFolderName = folderName.replace(/[^a-z0-9_\-]/gi, '_'); 
     console.log(`Processing files for folder: ${safeFolderName}`);
